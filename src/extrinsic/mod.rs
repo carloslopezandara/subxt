@@ -21,7 +21,8 @@ mod signer;
 
 pub use self::{
     extra::{
-        ChargeAssetTxPayment,
+        // ChargeAssetTxPayment,
+        ChargeTransactionPayment,
         CheckGenesis,
         CheckMortality,
         CheckNonce,

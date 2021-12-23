@@ -266,18 +266,46 @@ where
 
 /// Require the transactor pay for themselves and maybe include a tip to gain additional priority
 /// in the queue.
+// #[derive(Encode, Decode, Clone, Eq, PartialEq, Debug, TypeInfo)]
+// #[scale_info(skip_type_params(T))]
+// pub struct ChargeAssetTxPayment {
+//     /// The tip for the block author.
+//     #[codec(compact)]
+//     pub tip: u128,
+//     /// The asset with which to pay the tip.
+//     pub asset_id: Option<u32>,
+// }
+
+// impl SignedExtension for ChargeAssetTxPayment {
+//     const IDENTIFIER: &'static str = "ChargeAssetTxPayment";
+//     type AccountId = u64;
+//     type Call = ();
+//     type AdditionalSigned = ();
+//     type Pre = ();
+//     fn additional_signed(
+//         &self,
+//     ) -> Result<Self::AdditionalSigned, TransactionValidityError> {
+//         Ok(())
+//     }
+//     fn pre_dispatch(
+//         self,
+//         _who: &Self::AccountId,
+//         _call: &Self::Call,
+//         _info: &DispatchInfoOf<Self::Call>,
+//         _len: usize,
+//     ) -> Result<Self::Pre, TransactionValidityError> {
+//         Ok(())
+//     }
+// }
+
+/// Require the transactor pay for themselves and maybe include a tip to gain additional priority
+/// in the queue.
 #[derive(Encode, Decode, Clone, Eq, PartialEq, Debug, TypeInfo)]
 #[scale_info(skip_type_params(T))]
-pub struct ChargeAssetTxPayment {
-    /// The tip for the block author.
-    #[codec(compact)]
-    pub tip: u128,
-    /// The asset with which to pay the tip.
-    pub asset_id: Option<u32>,
-}
+pub struct ChargeTransactionPayment(#[codec(compact)] pub u128);
 
-impl SignedExtension for ChargeAssetTxPayment {
-    const IDENTIFIER: &'static str = "ChargeAssetTxPayment";
+impl SignedExtension for ChargeTransactionPayment {
+    const IDENTIFIER: &'static str = "ChargeTransactionPayment";
     type AccountId = u64;
     type Call = ();
     type AdditionalSigned = ();
@@ -285,15 +313,6 @@ impl SignedExtension for ChargeAssetTxPayment {
     fn additional_signed(
         &self,
     ) -> Result<Self::AdditionalSigned, TransactionValidityError> {
-        Ok(())
-    }
-    fn pre_dispatch(
-        self,
-        _who: &Self::AccountId,
-        _call: &Self::Call,
-        _info: &DispatchInfoOf<Self::Call>,
-        _len: usize,
-    ) -> Result<Self::Pre, TransactionValidityError> {
         Ok(())
     }
 }
@@ -336,7 +355,8 @@ impl<T: Config + Clone + Debug + Eq + Send + Sync> SignedExtra<T> for DefaultExt
         CheckMortality<T>,
         CheckNonce<T>,
         CheckWeight<T>,
-        ChargeAssetTxPayment,
+        // ChargeAssetTxPayment,
+        ChargeTransactionPayment,
     );
     type Parameters = ();
 
@@ -363,10 +383,11 @@ impl<T: Config + Clone + Debug + Eq + Send + Sync> SignedExtra<T> for DefaultExt
             CheckMortality((Era::Immortal, PhantomData), self.genesis_hash),
             CheckNonce(self.nonce),
             CheckWeight(PhantomData),
-            ChargeAssetTxPayment {
-                tip: u128::default(),
-                asset_id: None,
-            },
+            // ChargeAssetTxPayment {
+            //     tip: u128::default(),
+            //     asset_id: None,
+            // },
+            ChargeTransactionPayment(u128::default()),
         )
     }
 }

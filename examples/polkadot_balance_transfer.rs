@@ -28,7 +28,7 @@ use subxt::{
     PairSigner,
 };
 
-#[subxt::subxt(runtime_metadata_path = "examples/polkadot_metadata.scale")]
+#[subxt::subxt(runtime_metadata_path = "examples/sugarfunge_metadata.scale")]
 pub mod polkadot {}
 
 #[async_std::main]
