@@ -315,6 +315,15 @@ impl SignedExtension for ChargeTransactionPayment {
     ) -> Result<Self::AdditionalSigned, TransactionValidityError> {
         Ok(())
     }
+    fn pre_dispatch(
+        self,
+        _who: &Self::AccountId,
+        _call: &Self::Call,
+        _info: &DispatchInfoOf<Self::Call>,
+        _len: usize,
+    ) -> Result<Self::Pre, TransactionValidityError> {
+        Ok(())
+    }
 }
 
 /// Trait for implementing transaction extras for a runtime.

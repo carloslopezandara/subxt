@@ -26,7 +26,7 @@ use jsonrpsee::types::Error as RequestError;
 use sp_core::crypto::SecretStringError;
 use sp_runtime::{
     transaction_validity::TransactionValidityError,
-    DispatchError,
+    DispatchError, ModuleError
 };
 use thiserror::Error;
 
@@ -128,11 +128,11 @@ impl RuntimeError {
         error: DispatchError,
     ) -> Result<Self, Error> {
         match error {
-            DispatchError::Module {
+            DispatchError::Module (ModuleError{
                 index,
                 error,
                 message: _,
-            } => {
+             }) => {
                 let error = metadata.error(index, error)?;
                 Ok(Self::Module(PalletError {
                     pallet: error.pallet().to_string(),
@@ -144,6 +144,7 @@ impl RuntimeError {
             DispatchError::CannotLookup => Ok(Self::CannotLookup),
             DispatchError::ConsumerRemaining => Ok(Self::ConsumerRemaining),
             DispatchError::NoProviders => Ok(Self::NoProviders),
+            DispatchError::TooManyConsumers => Ok(Self::TooManyConsumers),
             DispatchError::Arithmetic(_math_error) => {
                 Ok(Self::Other("math_error".into()))
             }
